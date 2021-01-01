@@ -137,7 +137,7 @@ fn main() {
 				#version 450
 				layout(location = 0) out vec4 f_color;
 				void main() {
-					f_color = vec4(1.0, 0.0, 0.0, 1.0);
+					f_color = vec4(1.0, 1.0, 1.0, 1.0);
 				}
 			"
         }
@@ -238,7 +238,7 @@ fn main() {
                 recreate_swapchain = true;
             }
 
-            let clear_values = vec![[0.0, 0.0, 1.0, 1.0].into()];
+            let clear_values = vec![[0.0, 0.0, 0.0, 0.0].into()];
 
             let mut builder =
                 AutoCommandBufferBuilder::primary_one_time_submit(device.clone(), queue.family())
