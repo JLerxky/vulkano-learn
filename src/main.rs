@@ -84,7 +84,7 @@ void main() {
     }
 
     let shader = cs::Shader::load(device.clone()).expect("failed to create shader module");
-    let cache = PipelineCache::empty(device.clone());
+    // let cache = PipelineCache::empty(device.clone());
     
 
     let compute_pipeline = Arc::new(
