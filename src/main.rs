@@ -16,9 +16,9 @@ use vulkano::image::StorageImage;
 use vulkano::instance::Instance;
 use vulkano::instance::InstanceExtensions;
 use vulkano::instance::PhysicalDevice;
+use vulkano::pipeline::cache::PipelineCache;
 use vulkano::pipeline::ComputePipeline;
 use vulkano::sync::GpuFuture;
-use vulkano::pipeline::cache::PipelineCache;
 
 fn main() {
     let instance =
@@ -85,7 +85,6 @@ void main() {
 
     let shader = cs::Shader::load(device.clone()).expect("failed to create shader module");
     let cache = PipelineCache::empty(device.clone());
-    
 
     let compute_pipeline = Arc::new(
         ComputePipeline::new(device.clone(), &shader.main_entry_point(), &(), cache.ok())
@@ -136,5 +135,5 @@ void main() {
 
     let buffer_content = buf.read().unwrap();
     let image = ImageBuffer::<Rgba<u8>, _>::from_raw(1024, 1024, &buffer_content[..]).unwrap();
-    image.save("image.png").unwrap();
+    image.save("./target/image.png").unwrap();
 }
