@@ -1,4 +1,3 @@
-use vulkano::buffer::{BufferUsage, CpuAccessibleBuffer};
 use vulkano::command_buffer::{AutoCommandBufferBuilder, DynamicState};
 use vulkano::device::{Device, DeviceExtensions};
 use vulkano::framebuffer::{Framebuffer, FramebufferAbstract, RenderPassAbstract, Subpass};
@@ -13,6 +12,10 @@ use vulkano::swapchain::{
 };
 use vulkano::sync;
 use vulkano::sync::{FlushError, GpuFuture};
+use vulkano::{
+    buffer::{BufferUsage, CpuAccessibleBuffer},
+    instance::PhysicalDevicesIter,
+};
 
 use vulkano_win::VkSurfaceBuild;
 use winit::event::{Event, WindowEvent};
@@ -20,19 +23,30 @@ use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{Window, WindowBuilder};
 
 use std::sync::Arc;
+fn pick_physical(physical_iter: PhysicalDevicesIter) -> Option<PhysicalDevice> {
+    for p in physical_iter {
+        if p.name() == "Intel(R) HD Graphics 620" {
+            println!("Using device: {} (type: {:?}, version: {:?}, api_version: {:?}, supported_features: {:?})",
+                p.name(),
+                p.ty(),
+                p.driver_version(),
+                p.api_version(),
+                p.supported_features()
+            );
+            return Some(p);
+        }
+    }
+    None
+}
 
 fn main() {
     let required_extensions = vulkano_win::required_extensions();
 
     let instance = Instance::new(None, &required_extensions, None).unwrap();
 
-    let physical = PhysicalDevice::enumerate(&instance).next().unwrap();
+    let physical_iter = PhysicalDevice::enumerate(&instance);
 
-    println!(
-        "Using device: {} (type: {:?})",
-        physical.name(),
-        physical.ty()
-    );
+    let physical = pick_physical(physical_iter).unwrap();
 
     let event_loop = EventLoop::new();
     let surface = WindowBuilder::new()
@@ -121,12 +135,12 @@ fn main() {
         vulkano_shaders::shader! {
             ty: "vertex",
             src: "
-				#version 450
-				layout(location = 0) in vec2 position;
-				void main() {
-					gl_Position = vec4(position, 0.0, 1.0);
-				}
-			"
+    			#version 450
+    			layout(location = 0) in vec2 position;
+    			void main() {
+    				gl_Position = vec4(position, 0.0, 1.0);
+    			}
+    		"
         }
     }
 
@@ -134,12 +148,12 @@ fn main() {
         vulkano_shaders::shader! {
             ty: "fragment",
             src: "
-				#version 450
-				layout(location = 0) out vec4 f_color;
-				void main() {
-					f_color = vec4(1.0, 1.0, 1.0, 1.0);
-				}
-			"
+    			#version 450
+    			layout(location = 0) out vec4 f_color;
+    			void main() {
+    				f_color = vec4(1.0, 1.0, 1.0, 1.0);
+    			}
+    		"
         }
     }
 
